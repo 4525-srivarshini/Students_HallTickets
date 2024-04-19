@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hall Ticket</title>
+    <style>
+        /* Add your custom CSS styles here */
+    </style>
+</head>
+<body>
+<h1>Hall Ticket</h1>
+
+<h2>Student Information</h2>
+<ul>
+    <!-- Iterate over each student -->
+    <li th:each="students : ${students}">
+        <p>Name: <span th:text="${students.name}"></span></p>
+        <p>Roll No: <span th:text="${students.registrationNo}"></span></p>
+        <p>Department: <span th:text="${students.department}"></span></p>
+        <p>Semester: <span th:text="${students.semester}"></span></p>
+        <p>Subjects: <span th:text="${students.subjects}"></span></p>
+    </li>
+</ul>
+</body>
+</html>

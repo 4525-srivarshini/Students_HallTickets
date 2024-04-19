@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Sub Admins</title>
+</head>
+<body>
+<h1>Sub Admins List</h1>
+<table border="1">
+    <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Role</th>
+    </tr>
+    <tr th:each="subAdmin : ${subAdmins}">
+        <td th:text="${subAdmin.employeeId}"></td>
+        <td th:text="${subAdmin.sName}"></td>
+        <td th:text="${subAdmin.email}"></td>
+        <td th:text="${subAdmin.department}"></td>
+        <td th:text="${subAdmin.roles}"></td>
+
+    </tr>
+</table>
+</body>
+</html>
