@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
@@ -53,10 +54,10 @@ public class SubAdminServiceImpl implements SubAdminServiceDao{
         return "Data uploaded successfully";
     }
 
-    public String createSubjects(String subject, String subCode, String semester, String department) {
+    public String createSubjects(String subject, String subCode, String semester, String department, String timing) {
         try {
-            int count = jdbcTemplate.update("INSERT INTO DS_SUBJECTS (SubjectName, subjectCode, semester, department) VALUES (?, ?, ?, ?)",
-                    subject, subCode, semester, department);
+            int count = jdbcTemplate.update("INSERT INTO DS_SEMESTER_DEPARTMENTS (SubjectName, subjectCode, semester, department, examTiming) VALUES (?, ?, ?, ?,?)",
+                    subject, subCode, semester, department, timing);
             if (count > 0) {
                 return "Subject created successfully";
             } else {
@@ -93,27 +94,49 @@ public class SubAdminServiceImpl implements SubAdminServiceDao{
 
 
     public byte[] convertHtmlToPdf(String htmlContent) throws IOException {
-        try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage();
-            document.addPage(page);
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
-                contentStream.newLineAtOffset(100, 700);
-                contentStream.showText(htmlContent);
-                contentStream.endText();
-            }
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            document.save(byteArrayOutputStream);
-            return byteArrayOutputStream.toByteArray();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            ITextRenderer renderer = new ITextRenderer();
+            renderer.setDocumentFromString(htmlContent);
+            renderer.layout();
+            renderer.createPDF(outputStream);
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IOException("Error converting HTML to PDF", e);
         }
- }
+    }
+
+    public String generateHtmlFromStudents(List<Student> students) {
+        StringBuilder htmlBuilder = new StringBuilder();
+        htmlBuilder.append("<html><head><title>Hall Ticket</title></head><body>");
+        for (Student student : students) {
+            htmlBuilder.append("<div style='page-break-before:always'>"); // Start new page for each student
+            htmlBuilder.append("<h4>Directorate of Institute of Science and Technology</h4>");
+            htmlBuilder.append("<h3>JAWAHARLAL NEHRU TECHNOLOGICAL UNIVERSITY, KAKINADA </h3>");
+            htmlBuilder.append("<p>Regular/Supplementary Feb 2024</p>");
+            htmlBuilder.append("<ul>");
+            htmlBuilder.append("<li>");
+            htmlBuilder.append("<p>College Name: 1S-JNTUK KAKINADA</p>");
+            htmlBuilder.append("<p>EXAM CENTER: 1S-JNTUK KAKINADA</p>");
+            htmlBuilder.append("<p>EXAM TIME: 10AM-1PM</p>");
+            htmlBuilder.append("<p>Name: ").append(student.getName()).append("</p>");
+            htmlBuilder.append("<p>Roll No: ").append(student.getRegistrationNo()).append("</p>");
+            htmlBuilder.append("<p>Department: ").append(student.getDepartment()).append("</p>");
+            htmlBuilder.append("<p>Semester: ").append(student.getSemester()).append("</p>");
+            htmlBuilder.append("<p>Subjects: ").append(student.getSubjects()).append("</p>");
+            htmlBuilder.append("</li>");
+            htmlBuilder.append("</ul>");
+            htmlBuilder.append("</div>");
+        }
+        htmlBuilder.append("</body></html>");
+        return htmlBuilder.toString();
+    }
 
 
     public List<Student> fetchStudents(String semester, String department) {
         String query = "SELECT ds.*, " +
                 "(SELECT GROUP_CONCAT(CONCAT(subjectname, ' - ', subjectCode)) " +
-                " FROM DS_SUBJECTS " +
+                " FROM DS_SEMESTER_DEPARTMENTS " +
                 " WHERE department LIKE CONCAT('%', ds.department, '%') AND semester LIKE CONCAT('%', ds.semester, '%')) AS subjects " +
                 "FROM DS_STUDENTS ds " +
                 "WHERE ds.department = ? AND ds.semester = ?";

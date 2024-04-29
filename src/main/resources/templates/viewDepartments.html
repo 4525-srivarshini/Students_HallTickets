@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Students</title>
+</head>
+<body>
+<h1>View Students</h1>
+<form action="/viewStudents" method="get">
+    <label for="semester">Select Semester:</label>
+    <select id="semester" name="semester">
+        <option th:each="student : ${students}" th:value="${student.semester}" th:text="${student.semester}"></option>
+    </select>
+    <br><br>
+    <label for="department">Select Department:</label>
+    <select id="department" name="department">
+        <option th:each="student : ${students}" th:value="${student.department}" th:text="${student.department}"></option>
+    </select>
+    <br><br>
+    <button type="submit">View Students</button>
+</form>
+</body>
+</html>

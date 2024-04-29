@@ -1,6 +1,7 @@
 package com.charms.services;
 
 import com.charms.beans.AdminCreate;
+import com.charms.beans.Student;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -29,7 +30,7 @@ public class AdminServiceImpl implements AdminServiceDao{
     private static final String DELETE_ADMIN_SQL = "DELETE FROM DS_SSO_CREDENTIALS WHERE email= ?";
 
     @Override
-    public String createAdmin(AdminCreate adminCreate) {
+    public boolean createAdmin(AdminCreate adminCreate) {
         String name = adminCreate.getsName();
         String email = adminCreate.getEmail();
         String password = adminCreate.getPassword();
@@ -39,18 +40,18 @@ public class AdminServiceImpl implements AdminServiceDao{
         String roles = "ADMIN";
         try {
             if (!password.equals(confPassword)) {
-                return "Password and Confirm Password do not match";
+                return false;
             }
             int counter = jdbcTemplate.update(INSERT_ADMIN_SQL, name, email, password,employeeId, department, roles);
             if (counter > 0) {
-                return "Admin created successfully";
+                return true;
             } else {
-                return "Failed to create admin";
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error occurred";
         }
+        return false;
     }
 
     @Override
@@ -80,49 +81,49 @@ public class AdminServiceImpl implements AdminServiceDao{
         return Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    public String createSubAdmin(String sName, String email, String employeeId, String department){
+    public boolean createSubAdmin(String sName, String email, String employeeId, String department){
         String password = sName.trim()+"33";
         String roles = "SUB_ADMIN";
         try {
             int counter = jdbcTemplate.update(INSERT_ADMIN_SQL, sName, email, password,employeeId, department, roles);
             if (counter > 0) {
-                return "Sub Admin created successfully";
+                return true;
             } else {
-                return "Failed to create Sub Admin";
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error occurred";
         }
+        return false;
     }
-    public String editSubAdmin(String sName, String email, String employeeId, String department) {
+    public boolean editSubAdmin(String sName, String email, String employeeId, String department) {
         try {
             int counter = jdbcTemplate.update(UPDATE_ADMIN_SQL, sName, email, department, employeeId, email);
             if (counter > 0) {
-                return "Sub Admin updated successfully";
+                return true;
             } else {
-                return "Failed to update Sub Admin";
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error occurred";
         }
+        return false;
     }
-    public String deleteSubAdmin(String email) {
+    public boolean deleteSubAdmin(String email) {
         try {
             int counter = jdbcTemplate.update(DELETE_ADMIN_SQL, email);
             if (counter > 0) {
-                return "Sub Admin updated successfully";
+                return true;
             } else {
-                return "Failed to update Sub Admin";
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error occurred";
         }
+        return false;
     }
     public List<AdminCreate> getAllSubAdmins() {
-        String sql = "SELECT * FROM DS_SSO_CREDENTIALS";
+        String sql = "SELECT * FROM DS_SSO_CREDENTIALS where roles = 'SUB_ADMIN'";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             AdminCreate adminCreate = new AdminCreate();
             adminCreate.setEmployeeId(rs.getString("employee_id"));
@@ -133,6 +134,42 @@ public class AdminServiceImpl implements AdminServiceDao{
             return adminCreate;
         });
     }
+
+    public List<Student> getAllSemesters() {
+        String sql = "SELECT DISTINCT Department, Semester FROM DS_STUDENTS";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Student student = new Student();
+            student.setDepartment(rs.getString("department"));
+            student.setSemester(rs.getString("semester"));
+            return student;
+        });
+    }
+
+
+    public List<Student> getStudentsByDepartmentAndSemester(String department, String semester) {
+        String sql = "SELECT * FROM DS_STUDENTS WHERE department = ? AND semester = ?";
+        return jdbcTemplate.query(sql, new Object[]{department, semester}, (rs, rowNum) -> {
+            Student student = new Student();
+            student.setRegistrationNo(rs.getString("registrationNo"));
+            student.setName(rs.getString("name"));
+            student.setDepartment(rs.getString("department"));
+            student.setSemester(rs.getString("semester"));
+            return student;
+        });
+    }
+
+    public List<Student> getSubjects() {
+        String sql = "SELECT * FROM DS_STUDENTS";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Student student = new Student();
+            student.setRegistrationNo(rs.getString("registrationNo"));
+            student.setName(rs.getString("name"));
+            student.setDepartment(rs.getString("department"));
+            student.setSemester(rs.getString("semester"));
+            return student;
+        });
+    }
+
 
 
 }

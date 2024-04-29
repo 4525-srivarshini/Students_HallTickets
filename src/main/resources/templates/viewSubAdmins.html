@@ -13,6 +13,8 @@
         <th>Email</th>
         <th>Department</th>
         <th>Role</th>
+        <th>Edit</th>
+        <th>Delete</th>
     </tr>
     <tr th:each="subAdmin : ${subAdmins}">
         <td th:text="${subAdmin.employeeId}"></td>
@@ -20,7 +22,8 @@
         <td th:text="${subAdmin.email}"></td>
         <td th:text="${subAdmin.department}"></td>
         <td th:text="${subAdmin.roles}"></td>
-
+        <td><a th:href="@{'/editSubAdmin/' + ${subAdmin.employeeId}}">Edit</a></td>
+        <td><a th:href="@{'/deleteSubAdmin/' + ${subAdmin.employeeId}}">Delete</a></td>
     </tr>
 </table>
 </body>

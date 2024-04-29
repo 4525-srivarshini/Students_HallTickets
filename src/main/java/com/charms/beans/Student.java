@@ -6,6 +6,7 @@ public class Student {
     String department;
     String semester;
     String subjects;
+    String timing;
 
     public String getName() {
         return name;

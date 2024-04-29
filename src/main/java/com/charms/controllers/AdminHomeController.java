@@ -1,6 +1,7 @@
 package com.charms.controllers;
 
 import com.charms.beans.AdminCreate;
+import com.charms.beans.Student;
 import com.charms.services.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,8 +22,13 @@ public class AdminHomeController {
     }
     @PostMapping("/registerAdmin")
     public String register(@ModelAttribute("adminCreate") AdminCreate account) {
-        adminService.createAdmin(account);
-        return "successMessage";
+        boolean registrationSuccess = adminService.createAdmin(account);
+        if (registrationSuccess) {
+            return "redirect:/homePage";
+        }
+        else {
+            return "redirect:/registerAdmin";
+        }
     }
     @GetMapping("/loginAdmin")
     public String showLoginAdminForm() {
@@ -32,29 +38,30 @@ public class AdminHomeController {
     public String login(@RequestParam String username, @RequestParam String password) {
         boolean loginSuccess = adminService.loginAdmin(username, password);
         if (loginSuccess) {
-            return "redirect:/successMessage"; // Redirect to successMessage if login is successful
+            return "redirect:/homePage";
         } else {
-            return "redirect:/login"; // Redirect to login page if login fails
+            return "redirect:/login";
         }
     }
-
-    @GetMapping("/successMessage")
-    public String showSuccessMessage() {
-        return "successMessage"; // Return the successMessage view
+    @GetMapping("/homePage")
+    public String showHomePage() {
+        return "homePage";
     }
+
     @PostMapping("/createSubAdmin")
     public String createSubAdmin(@RequestParam String sname, @RequestParam String email,@RequestParam String employee_Id, @RequestParam String department) {
-        return adminService.createSubAdmin(sname, email, employee_Id, department);
+        boolean isCreateSubAdmin =  adminService.createSubAdmin(sname, email, employee_Id, department);
+        return "hi";
     }
-
     @PostMapping("/editSubAdmin")
     public String editSubAdmin(@RequestParam String sname, @RequestParam String email,@RequestParam String employee_Id, @RequestParam String department) {
-        return adminService.editSubAdmin(sname, email, employee_Id, department);
+        boolean isEditSubAdmin =  adminService.editSubAdmin(sname, email, employee_Id, department);
+        return "hi";
     }
-
     @PostMapping("/deleteSubAdmin")
     public String deleteSubAdmin(@RequestParam String email) {
-        return adminService.deleteSubAdmin(email);
+        boolean isDeleteAdmin =  adminService.deleteSubAdmin(email);
+        return "hi";
     }
 
     @GetMapping("/viewSubAdmins")
@@ -64,6 +71,25 @@ public class AdminHomeController {
         return "viewSubAdmins";
     }
 
+    @GetMapping("/viewDepartments")
+    public String viewDepartments(Model model) {
+        List<Student> students = adminService.getAllSemesters();
+        model.addAttribute("students", students);
+        return "viewDepartments";
+    }
 
+    @GetMapping("/viewStudents")
+    public String viewStudents(Model model, @RequestParam String semester, @RequestParam String department) {
+        List<Student> students = adminService.getStudentsByDepartmentAndSemester(department, semester);
+        model.addAttribute("students", students);
+        return "viewStudents";
+    }
+
+    @GetMapping("/viewSubjects")
+    public String viewSubjects(Model model) {
+        List<Student> students = adminService.getSubjects();
+        model.addAttribute("students", students);
+        return "viewStudents";
+    }
 
 }
