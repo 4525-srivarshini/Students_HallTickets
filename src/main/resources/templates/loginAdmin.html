@@ -3,17 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Login Admin</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+            /* styles.css */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+        }
+        img{
+            height: 80%;
+        }
+
+        h1 {
+            color: #343a40;
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+    </style>
 </head>
 <body>
-<h1>Login Admin</h1>
-<form action="#" th:action="@{/loginAdmin}" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
-
-    <button type="submit">Login</button>
-</form>
+<div class="header">
+    <img src="https://www.jntuk.edu.in/static/media/Jntuk-white-logo.3c3e0526.png" alt="JNTUK Logo" class="logo">
+</div>
+<h4 align="center">Login Admin</h4>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="#" th:action="@{/loginAdmin}" method="post">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="/registerAdmin">Register here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

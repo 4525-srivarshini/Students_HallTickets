@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>com.charms</groupId>
-    <artifactId>My_MakeUp_Store</artifactId>
+    <artifactId>Student_HallTickets</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Simple_Charms</name>
     <description>Building Business related project using spring boot</description>
