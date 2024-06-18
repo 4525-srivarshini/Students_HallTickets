@@ -1,11 +1,18 @@
 package com.charms.services;
 
+import com.charms.beans.Exam;
 import com.charms.beans.Student;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.Code128Writer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -18,11 +25,14 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
 public class SubAdminServiceImpl implements SubAdminServiceDao{
-
+    @Value("${barcode.storage.path}")
+    private String barcodeStoragePath;
     private final String INSERT_STUDENTS_DATA = "INSERT INTO DS_STUDENTS (name, registrationNo, department, semester) VALUES (?, ?, ?, ?)";
     private final String INSERT_SUBJECTS_DATA = "INSERT INTO DS_SUBJECTS (SubjectName, subjectCode, semester, department) VALUES (?, ?, ?, ?)";
 
@@ -54,18 +64,18 @@ public class SubAdminServiceImpl implements SubAdminServiceDao{
         return "Data uploaded successfully";
     }
 
-    public String createSubjects(String subject, String subCode, String semester, String department, String timing) {
+    public String createSubjects(String subject, String subCode, String semester, String department, String examDate, String timing, String reg_supp) {
         try {
-            int count = jdbcTemplate.update("INSERT INTO DS_SEMESTER_DEPARTMENTS (SubjectName, subjectCode, semester, department, examTiming) VALUES (?, ?, ?, ?,?)",
-                    subject, subCode, semester, department, timing);
+            int count = jdbcTemplate.update("INSERT INTO DS_SEMESTER_DEPARTMENTS (subjectName, subjectCode, semester, department, examDate, timing, Reg_Supp) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    subject, subCode, semester, department, examDate, timing, reg_supp);
             if (count > 0) {
                 return "Subject created successfully";
             } else {
-                return "Failed to create Subject";
+                return "Failed to create subject";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error Occurred";
+            return "Error occurred";
         }
     }
 
@@ -106,30 +116,89 @@ public class SubAdminServiceImpl implements SubAdminServiceDao{
         }
     }
 
-    public String generateHtmlFromStudents(List<Student> students) {
+    public String generateHtmlFromStudents(List<Student> students) throws IOException, WriterException {
         StringBuilder htmlBuilder = new StringBuilder();
         htmlBuilder.append("<html><head><title>Hall Ticket</title></head><body>");
         for (Student student : students) {
             htmlBuilder.append("<div style='page-break-before:always'>"); // Start new page for each student
-            htmlBuilder.append("<h4>Directorate of Institute of Science and Technology</h4>");
-            htmlBuilder.append("<h3>JAWAHARLAL NEHRU TECHNOLOGICAL UNIVERSITY, KAKINADA </h3>");
-            htmlBuilder.append("<p>Regular/Supplementary Feb 2024</p>");
-            htmlBuilder.append("<ul>");
-            htmlBuilder.append("<li>");
-            htmlBuilder.append("<p>College Name: 1S-JNTUK KAKINADA</p>");
-            htmlBuilder.append("<p>EXAM CENTER: 1S-JNTUK KAKINADA</p>");
-            htmlBuilder.append("<p>EXAM TIME: 10AM-1PM</p>");
-            htmlBuilder.append("<p>Name: ").append(student.getName()).append("</p>");
-            htmlBuilder.append("<p>Roll No: ").append(student.getRegistrationNo()).append("</p>");
-            htmlBuilder.append("<p>Department: ").append(student.getDepartment()).append("</p>");
-            htmlBuilder.append("<p>Semester: ").append(student.getSemester()).append("</p>");
-            htmlBuilder.append("<p>Subjects: ").append(student.getSubjects()).append("</p>");
-            htmlBuilder.append("</li>");
-            htmlBuilder.append("</ul>");
+            htmlBuilder.append("<table border='1' cellspacing='0' cellpadding='5'>");
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td colspan='3'>");
+            htmlBuilder.append("<img src='Jntuk-logo.png' alt='Logo' style='float:left;'/>");
+            htmlBuilder.append("<p style='text-align:center;'>Directorate of Institute if Science and Technology</p>");
+            htmlBuilder.append("<h4 style='text-align:center;'>JAWAHARLAL NEHRU TECHNOLOGICAL UNIVERSITY KAKINADA</h4>");
+            htmlBuilder.append("<p style='text-align:center;'>I METCH I SEMESTER REGULAR/SUPPLEMENTARY EXAMINATIONS</p>");
+            htmlBuilder.append("</td>");
+            htmlBuilder.append("</tr>");
+
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td colspan='2'>Hall Ticket No: ").append(student.getRegistrationNo()).append("</td>");
+/*
+            htmlBuilder.append("<td rowspan='4'><img src='").append(student.getImagePath()).append("' alt='Student Photo' height='100'/></td>");
+*/
+            htmlBuilder.append("</tr>");
+
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td colspan='2'>Name: ").append(student.getName()).append("</td>");
+            htmlBuilder.append("</tr>");
+
+            /*htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td colspan='2'><barcode>").append(generateBarcode(student.getRegistrationNo())).append("</barcode></td>");
+            htmlBuilder.append("</tr>");
+*/
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td colspan='2'>CSE</td>");
+            htmlBuilder.append("</tr>");
+
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td>Date</td>");
+            htmlBuilder.append("<td>Time</td>");
+            htmlBuilder.append("<td>Course Code</td>");
+            htmlBuilder.append("<td>Registered Courses</td>");
+            htmlBuilder.append("</tr>");
+
+            for (Exam exam : student.getExam()) {
+                htmlBuilder.append("<tr>");
+                htmlBuilder.append("<td>").append(exam.getExamDate()).append("</td>");
+                htmlBuilder.append("<td>").append(exam.getTiming()).append("</td>");
+                htmlBuilder.append("<td>").append(exam.getSubjectCode()).append("</td>");
+                htmlBuilder.append("<td>").append(exam.getSubjectName()).append("</td>");
+                htmlBuilder.append("</tr>");
+            }
+
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td colspan='2'>Signature of Student</td>");
+            htmlBuilder.append("<td>Controller of Examinations</td>");
+            htmlBuilder.append("<td>Principal</td>");
+            htmlBuilder.append("</tr>");
+
+            htmlBuilder.append("<tr>");
+            /*htmlBuilder.append("<td colspan='2'><img src='").append(student.getStudentSignaturePath()).append("' alt='Student Signature' height='30'/></td>");
+            htmlBuilder.append("<td><img src='path_to_controller_signature.png' alt='Controller Signature' height='30'/></td>");
+            htmlBuilder.append("<td><img src='path_to_principal_signature.png' alt='Principal Signature' height='30'/></td>");*/
+            htmlBuilder.append("</tr>");
+
+            htmlBuilder.append("</table>");
             htmlBuilder.append("</div>");
         }
         htmlBuilder.append("</body></html>");
         return htmlBuilder.toString();
+    }
+
+    public String generateBarcode(String hallTicketNo) throws WriterException, IOException {
+        String barcodeText = hallTicketNo;
+        String filePath = barcodeStoragePath + hallTicketNo + ".png";
+        int width = 300;
+        int height = 100;
+        String imageFormat = "png";
+
+        Code128Writer barcodeWriter = new Code128Writer();
+        BitMatrix bitMatrix = barcodeWriter.encode(barcodeText, BarcodeFormat.CODE_128, width, height);
+
+        Path path = FileSystems.getDefault().getPath(filePath);
+        MatrixToImageWriter.writeToPath(bitMatrix, imageFormat, path);
+
+        return filePath;
     }
 
 

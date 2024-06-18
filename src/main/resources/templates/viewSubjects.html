@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Subjects</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .action-links a {
+            margin-right: 10px;
+            text-decoration: none;
+        }
+
+        .action-links a.edit {
+            color: #28a745;
+        }
+
+        .action-links a.delete {
+            color: #dc3545;
+        }
+        .modal-content {
+            width: 80%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <h1 class="my-4">View Subjects</h1>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#uploadSubjectModal">Upload a new subject</button>
+
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Subject Name</th>
+            <th>Subject Code</th>
+            <th>Semester</th>
+            <th>Department</th>
+            <th>Exam Date</th>
+            <th>Timing</th>
+            <th>EDIT</th>
+            <th>DELETE</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="subject : ${subjects}">
+            <td th:text="${subject.subjectName}"></td>
+            <td th:text="${subject.subjectCode}"></td>
+            <td th:text="${subject.semester}"></td>
+            <td th:text="${subject.department}"></td>
+            <td th:text="${subject.examDate}"></td>
+            <td th:text="${subject.timing}"></td>
+            <td>
+                <button class="btn btn-warning btn-sm" th:attr="data-id=${subject.id}" data-toggle="modal" data-target="#editSubjectModal" onclick="editSubject(this)">Edit</button>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-sm" th:attr="data-id=${subject.id}" onclick="deleteSubject(this)">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Upload Subject Modal -->
+<div class="modal fade" id="uploadSubjectModal" tabindex="-1" role="dialog" aria-labelledby="uploadSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadSubjectModalLabel">Upload Subject</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{/uploadSubjects}" th:method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="subCode">Subject Code</label>
+                        <input type="text" class="form-control" id="subCode" name="subCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject Name</label>
+                        <input type="text" class="form-control" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <input type="text" class="form-control" id="semester" name="semester" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" class="form-control" id="department" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="timing">Timing</label>
+                        <input type="text" class="form-control" id="timing" name="timing" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="examDate">Exam Date</label>
+                        <input type="datetime-local" class="form-control" id="examDate" name="examDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Subject Modal -->
+<div class="modal fade" id="editSubjectModal" tabindex="-1" role="dialog" aria-labelledby="editSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubjectModalLabel">Edit Subject</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editSubjectForm" th:action="@{/subjects/editSubjects}" th:method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="editId" name="id">
+                    <div class="form-group">
+                        <label for="editSubCode">Subject Code</label>
+                        <input type="text" class="form-control" id="editSubCode" name="subCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSubject">Subject Name</label>
+                        <input type="text" class="form-control" id="editSubject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSemester">Semester</label>
+                        <input type="text" class="form-control" id="editSemester" name="semester" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDepartment">Department</label>
+                        <input type="text" class="form-control" id="editDepartment" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTiming">Timing</label>
+                        <input type="text" class="form-control" id="editTiming" name="timing" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editExamDate">Exam Date</label>
+                        <input type="datetime-local" class="form-control" id="editExamDate" name="examDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function editSubject(button) {
+        var id = button.getAttribute('data-id');
+        var row = button.closest('tr');
+        var subjectName = row.cells[0].innerText;
+        var subjectCode = row.cells[1].innerText;
+        var semester = row.cells[2].innerText;
+        var department = row.cells[3].innerText;
+        var examDate = row.cells[4].innerText;
+        var timing = row.cells[5].innerText;
+        var regSupp = row.cells[6].innerText;
+
+        document.getElementById('editId').value = id;
+        document.getElementById('editSubCode').value = subjectCode;
+        document.getElementById('editSubject').value = subjectName;
+        document.getElementById('editSemester').value = semester;
+        document.getElementById('editDepartment').value = department;
+        document.getElementById('editTiming').value = timing;
+        document.getElementById('editExamDate').value = examDate;
+        document.getElementById('editRegSupp').value = regSupp;
+    }
+
+    function deleteSubject(button) {
+        var id = button.getAttribute('data-id');
+        if (confirm('Are you sure you want to delete this subject?')) {
+            window.location.href = '/subjects/deleteSubject/' + id;
+        }
+    }
+</script>
+</body>
+</html>

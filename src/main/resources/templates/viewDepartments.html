@@ -1,24 +1,107 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Students</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
 <body>
-<h1>View Students</h1>
-<form action="/viewStudents" method="get">
-    <label for="semester">Select Semester:</label>
-    <select id="semester" name="semester">
-        <option th:each="student : ${students}" th:value="${student.semester}" th:text="${student.semester}"></option>
-    </select>
-    <br><br>
-    <label for="department">Select Department:</label>
-    <select id="department" name="department">
-        <option th:each="student : ${students}" th:value="${student.department}" th:text="${student.department}"></option>
-    </select>
-    <br><br>
-    <button type="submit">View Students</button>
-</form>
+<div class="container mt-4">
+    <h2>Students List</h2>
+
+    <!-- Form for selecting semester and department -->
+    <form id="viewStudentsForm" th:action="@{/viewStudents}" method="get">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="semester">Select Semester:</label>
+                <select id="semester" name="semester" class="form-control">
+                    <option th:each="student : ${students}" th:value="${student.semester}"
+                            th:text="${student.semester}"></option>
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="department">Select Department:</label>
+                <select id="department" name="department" class="form-control">
+                    <option th:each="student : ${students}" th:value="${student.department}"
+                            th:text="${student.department}"></option>
+                </select>
+            </div>
+            <div class="form-group col-md-2">
+                <button type="submit" class="btn btn-primary">View Students</button>
+            </div>
+            <div class="form-group col-md-2">
+                <button type="button" class="btn btn-success" onclick="generateHallTicket()">Generate Hall Ticket</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Button to select all subjects for all students -->
+
+
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="thead-dark">
+        <tr>
+            <th>Registration No</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Semester</th>
+            <th>Subjects
+                <div class="form-group">
+                    <button type="button" class="btn btn-secondary" onclick="selectAllSubjects()">">>"</button>
+                </div>
+            </th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${students}">
+            <td th:text="${student.registrationNo}"></td>
+            <td th:text="${student.name}"></td>
+            <td th:text="${student.department}"></td>
+            <td th:text="${student.semester}"></td>
+            <td>
+                <select th:id="'subjects-' + ${student.registrationNo}" th:name="'subjects-' + ${student.registrationNo}" class="form-control" multiple>
+                    <option th:each="subject : ${subjects}" th:value="${subject.subjectCode}" th:text="${subject.subjectName}"></option>
+                </select>
+            </td>
+            <td>
+                <a th:href="@{'/editStudent/' + ${student.registrationNo}}" class="btn btn-sm btn-primary">Edit</a>
+                <a th:href="@{'/deleteStudent/' + ${student.registrationNo}}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"
+        integrity="sha384-qj3gfsFwEaUr8PivWskZYvSO8CaeFjQerF8bJF0HOcHPtUdFqSZOp+TbVkIfL6/Q"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-4oK5Ff+rBdHRBiVcF2jcO+kgpKk7t3g20gG3OStXAZmZGGC1Pi6OgPEJgeDEKaVb"
+        crossorigin="anonymous"></script>
+
+<script>
+    function generateHallTicket() {
+        var semester = document.getElementById("semester").value;
+        var department = document.getElementById("department").value;
+        // Form the URL with parameters and redirect to generate hall ticket endpoint
+        window.location.href = "/generateHallTicket?semester=" + encodeURIComponent(semester) + "&department=" + encodeURIComponent(department);
+    }
+
+    function selectAllSubjects() {
+        var subjectSelects = document.querySelectorAll('select[id^="subjects-"]');
+        subjectSelects.forEach(function(select) {
+            for (var i = 0; i < select.options.length; i++) {
+                select.options[i].selected = true;
+            }
+        });
+    }
+</script>
 </body>
 </html>

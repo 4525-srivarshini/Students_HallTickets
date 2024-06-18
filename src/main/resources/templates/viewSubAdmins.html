@@ -1,30 +1,209 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>View Sub Admins</title>
+    <title>Manage Sub-Admins</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .action-links a {
+            margin-right: 10px;
+            text-decoration: none;
+        }
+
+        .action-links a.edit {
+            color: #28a745;
+        }
+
+        .action-links a.delete {
+            color: #dc3545;
+        }
+        .modal-content {
+            width: 80%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-<h1>Sub Admins List</h1>
-<table border="1">
-    <tr>
-        <th>Employee ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Department</th>
-        <th>Role</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-    <tr th:each="subAdmin : ${subAdmins}">
-        <td th:text="${subAdmin.employeeId}"></td>
-        <td th:text="${subAdmin.sName}"></td>
-        <td th:text="${subAdmin.email}"></td>
-        <td th:text="${subAdmin.department}"></td>
-        <td th:text="${subAdmin.roles}"></td>
-        <td><a th:href="@{'/editSubAdmin/' + ${subAdmin.employeeId}}">Edit</a></td>
-        <td><a th:href="@{'/deleteSubAdmin/' + ${subAdmin.employeeId}}">Delete</a></td>
-    </tr>
-</table>
+
+<div class="container mt-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 text-right">
+                <h2>SubAdmins</h2>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 text-right">
+                <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#createModal" th:align="right">Create New Sub-Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Employee ID</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over subAdmins and display each row -->
+        <tr th:each="subAdmin : ${subAdmins}">
+            <td th:text="${subAdmin.sName}"></td>
+            <td th:text="${subAdmin.email}"></td>
+            <td th:text="${subAdmin.employeeId}"></td>
+            <td th:text="${subAdmin.department}"></td>
+            <td>
+                <a href="#" th:attr="data-toggle='modal', data-target='#editModal', data-name=${subAdmin.sName}, data-email=${subAdmin.email}, data-empid=${subAdmin.employeeId}, data-dept=${subAdmin.department}" class="btn btn-primary btn-sm">Edit</a>
+                <form th:action="@{/deleteSubAdmin}" method="post" style="display: inline;">
+                    <input type="hidden" name="email" th:value="${subAdmin.email}">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Create New Sub-Admin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form to create new sub-admin -->
+                    <form th:action="@{/createSubAdmin}" method="post">
+                        <div class="form-group">
+                            <label for="sName">Name:</label>
+                            <input type="text" class="form-control" id="sName" name="sName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee_Id">Employee ID:</label>
+                            <input type="text" class="form-control" id="employee_Id" name="employee_Id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="department">Department:</label>
+                            <input type="text" class="form-control" id="department" name="department" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Sub-Admin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="post">
+                        <div class="form-group">
+                            <label for="edit_sName">Name:</label>
+                            <input type="text" class="form-control" id="edit_sName" name="sName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_email">Email:</label>
+                            <input type="email" class="form-control" id="edit_email" name="email" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_employee_Id">Employee ID:</label>
+                            <input type="text" class="form-control" id="edit_employee_Id" name="employee_Id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_department">Department:</label>
+                            <input type="text" class="form-control" id="edit_department" name="department" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and jQuery (required for modal functionality) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- JavaScript to populate edit modal fields -->
+<script th:inline="javascript">
+    $(document).ready(function() {
+        $('#editModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var name = button.data('name');
+            var email = button.data('email');
+            var empid = button.data('empid');
+            var dept = button.data('dept');
+            var modal = $(this);
+
+            modal.find('#edit_sname').val(name);
+            modal.find('#edit_email').val(email);
+            modal.find('#edit_employee_Id').val(empid);
+            modal.find('#edit_department').val(dept);
+        });
+    });
+</script>
 </body>
 </html>

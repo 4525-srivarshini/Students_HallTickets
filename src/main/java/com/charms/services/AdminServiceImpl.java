@@ -1,16 +1,21 @@
 package com.charms.services;
 
 import com.charms.beans.AdminCreate;
+import com.charms.beans.Exam;
 import com.charms.beans.Student;
+import com.charms.beans.Subject;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -96,6 +101,7 @@ public class AdminServiceImpl implements AdminServiceDao{
         }
         return false;
     }
+
     public boolean editSubAdmin(String sName, String email, String employeeId, String department) {
         try {
             int counter = jdbcTemplate.update(UPDATE_ADMIN_SQL, sName, email, department, employeeId, email);
@@ -135,6 +141,19 @@ public class AdminServiceImpl implements AdminServiceDao{
         });
     }
 
+    public List<AdminCreate> getSubAdminDetails(String employeeId) {
+        String sql = "SELECT * FROM DS_SSO_CREDENTIALS WHERE employee_id = ?";
+        return jdbcTemplate.query(sql, new Object[]{employeeId}, (rs, rowNum) -> {
+            AdminCreate adminCreate = new AdminCreate();
+            adminCreate.setEmployeeId(rs.getString("employee_id"));
+            adminCreate.setsName(rs.getString("name"));
+            adminCreate.setEmail(rs.getString("email"));
+            adminCreate.setDepartment(rs.getString("department"));
+            adminCreate.setRoles(rs.getString("roles"));
+            return adminCreate;
+        });
+    }
+
     public List<Student> getAllSemesters() {
         String sql = "SELECT DISTINCT Department, Semester FROM DS_STUDENTS";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -158,18 +177,77 @@ public class AdminServiceImpl implements AdminServiceDao{
         });
     }
 
-    public List<Student> getSubjects() {
-        String sql = "SELECT * FROM DS_STUDENTS";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Student student = new Student();
-            student.setRegistrationNo(rs.getString("registrationNo"));
-            student.setName(rs.getString("name"));
-            student.setDepartment(rs.getString("department"));
-            student.setSemester(rs.getString("semester"));
-            return student;
-        });
+    public String createSubjects(String subject, String subCode, String semester, String department, String examDate, String timing) {
+        try {
+            int count = jdbcTemplate.update("INSERT INTO DS_SEMESTER_DEPARTMENTS (subjectName, subjectCode, semester, department, examDate, timing) VALUES (?, ?, ?, ?, ?, ?)",
+                    subject, subCode, semester, department, examDate, timing);
+            if (count > 0) {
+                return "Subject created successfully";
+            } else {
+                return "Failed to create subject";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error occurred";
+        }
+    }
+
+    public List<Exam> getSubjects() {
+        return jdbcTemplate.query("SELECT id, subjectName, subjectCode, semester, department, examDate, timing FROM DS_SEMESTER_DEPARTMENTS",
+                (rs, rowNum) -> new Exam(
+                        rs.getLong("id"),
+                        rs.getString("subjectName"),
+                        rs.getString("subjectCode"),
+                        rs.getString("semester"),
+                        rs.getString("department"),
+                        rs.getString("examDate"),
+                        rs.getString("timing")
+                ));
+    }
+
+    public String updateSubject(Long id, String subject, String subCode, String semester, String department, String examDate, String timing) {
+        try {
+            int count = jdbcTemplate.update("UPDATE DS_SEMESTER_DEPARTMENTS SET subjectName=?, subjectCode=?, semester=?, department=?, examDate=?, timing=? WHERE id=?",
+                    subject, subCode, semester, department, examDate, timing, id);
+            if (count > 0) {
+                return "Subject updated successfully";
+            } else {
+                return "Failed to update subject";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error occurred";
+        }
+    }
+
+    public String deleteSubject(Long id) {
+        try {
+            int count = jdbcTemplate.update("DELETE FROM DS_SEMESTER_DEPARTMENTS WHERE id=?", id);
+            if (count > 0) {
+                return "Subject deleted successfully";
+            } else {
+                return "Failed to delete subject";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error occurred";
+        }
+    }
+
+    public List<Subject> getAllSubjects() {
+        String sql = "select DISTINCT subjectCode ,subjectName FROM DS_SEMESTER_DEPARTMENTS dsd   \n";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> mapRowToSubject(rs));
+    }
+
+    private Subject mapRowToSubject(ResultSet rs) throws SQLException {
+        Subject subject = new Subject();
+        subject.setSubjectCode(rs.getString("subjectCode"));
+        subject.setSubjectName(rs.getString("subjectName"));
+        return subject;
     }
 
 
 
+
 }
+

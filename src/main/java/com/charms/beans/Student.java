@@ -1,5 +1,7 @@
 package com.charms.beans;
 
+import java.util.List;
+
 public class Student {
     String name;
     String registrationNo;
@@ -7,6 +9,24 @@ public class Student {
     String semester;
     String subjects;
     String timing;
+
+    public List<Exam> getExam() {
+        return exam;
+    }
+
+    public void setExam(List<Exam> exam) {
+        this.exam = exam;
+    }
+
+    List<Exam> exam;
+
+    public String getTiming() {
+        return timing;
+    }
+
+    public void setTiming(String timing) {
+        this.timing = timing;
+    }
 
     public String getName() {
         return name;

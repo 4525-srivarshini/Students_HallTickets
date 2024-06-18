@@ -1,7 +1,9 @@
 package com.charms.controllers;
 
 import com.charms.beans.AdminCreate;
+import com.charms.beans.Exam;
 import com.charms.beans.Student;
+import com.charms.beans.Subject;
 import com.charms.services.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,17 +53,18 @@ public class AdminHomeController {
     @PostMapping("/createSubAdmin")
     public String createSubAdmin(@RequestParam String sname, @RequestParam String email,@RequestParam String employee_Id, @RequestParam String department) {
         boolean isCreateSubAdmin =  adminService.createSubAdmin(sname, email, employee_Id, department);
-        return "hi";
+        return "redirect:/viewSubAdmins";
     }
     @PostMapping("/editSubAdmin")
-    public String editSubAdmin(@RequestParam String sname, @RequestParam String email,@RequestParam String employee_Id, @RequestParam String department) {
-        boolean isEditSubAdmin =  adminService.editSubAdmin(sname, email, employee_Id, department);
-        return "hi";
+    public String editSubAdmin(@RequestParam String sname, @RequestParam String email, @RequestParam String employee_Id, @RequestParam String department) {
+        boolean isEditSubAdmin = adminService.editSubAdmin(sname, email, employee_Id, department);
+        return "redirect:/viewSubAdmins";
     }
+
     @PostMapping("/deleteSubAdmin")
     public String deleteSubAdmin(@RequestParam String email) {
-        boolean isDeleteAdmin =  adminService.deleteSubAdmin(email);
-        return "hi";
+        boolean isDeleteAdmin = adminService.deleteSubAdmin(email);
+        return "redirect:/viewSubAdmins";
     }
 
     @GetMapping("/viewSubAdmins")
@@ -69,6 +72,12 @@ public class AdminHomeController {
         List<AdminCreate> subAdmins = adminService.getAllSubAdmins();
         model.addAttribute("subAdmins", subAdmins);
         return "viewSubAdmins";
+    }
+
+    @GetMapping("/getSubAdmins/{employeeId}")
+    public List<AdminCreate> getSubAdmin(Model model, @PathVariable String employeeId) {
+        List<AdminCreate> subAdminDetails = adminService.getSubAdminDetails(employeeId);
+        return subAdminDetails;
     }
 
     @GetMapping("/viewDepartments")
@@ -81,15 +90,43 @@ public class AdminHomeController {
     @GetMapping("/viewStudents")
     public String viewStudents(Model model, @RequestParam String semester, @RequestParam String department) {
         List<Student> students = adminService.getStudentsByDepartmentAndSemester(department, semester);
+        List<Subject> subjects = adminService.getAllSubjects();
         model.addAttribute("students", students);
-        return "viewStudents";
+        model.addAttribute("subjects", subjects);
+        return "viewDepartments";
+    }
+
+    @GetMapping("/uploadSubjects")
+    public String showUploadForm() {
+        return "uploadSubjects";
+    }
+
+    @PostMapping("/uploadSubjects")
+    public String addSubjects(@RequestParam String subCode, @RequestParam String subject, @RequestParam String semester, @RequestParam String department, @RequestParam String timing, @RequestParam String examDate, Model model) {
+        String result = adminService.createSubjects(subject, subCode, semester, department, examDate, timing);
+        model.addAttribute("result", result);
+        return "redirect:/viewSubjects";
     }
 
     @GetMapping("/viewSubjects")
     public String viewSubjects(Model model) {
-        List<Student> students = adminService.getSubjects();
-        model.addAttribute("students", students);
-        return "viewStudents";
+        List<Exam> subjects = adminService.getSubjects();
+        model.addAttribute("subjects", subjects);
+        return "viewSubjects";
+    }
+
+    @PostMapping("/editSubjects")
+    public String editSubjects(@RequestParam Long id, @RequestParam String subCode, @RequestParam String subject, @RequestParam String semester, @RequestParam String department, @RequestParam String timing, @RequestParam String examDate, Model model) {
+        String result = adminService.updateSubject(id, subject, subCode, semester, department, examDate, timing);
+        model.addAttribute("result", result);
+        return "redirect:/viewSubjects";
+    }
+
+    @GetMapping("/deleteSubject/{id}")
+    public String deleteSubject(@PathVariable Long id, Model model) {
+        String result = adminService.deleteSubject(id);
+        model.addAttribute("result", result);
+        return "redirect:/viewSubjects";
     }
 
 }
