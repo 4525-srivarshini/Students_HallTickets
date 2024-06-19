@@ -25,31 +25,28 @@ public class SubAdminHomeController {
 
     @PostMapping("/uploadStudentsData")
     public String uploadStudentsData(@RequestParam("file") MultipartFile file) throws IOException {
-        return subAdminService.uploadStudentsData(file);
+        boolean log = subAdminService.uploadStudentsData(file);
+        if (true){
+            return "successMessage";
+        }
+        else {
+            return "successMessage.html";
+        }
     }
 
-   /* @GetMapping("/uploadSubjects")
-    public String showUploadForm() {
-        return "uploadSubjects";
+    @PostMapping("/uploadSubjectsData")
+    public String uploadSubjectsData(@RequestParam("file") MultipartFile file) throws IOException {
+        boolean log = subAdminService.uploadSubjectsData(file);
+        if (true){
+            return "successMessage";
+        }
+        else {
+            return "successMessage.html";
+        }
     }
-
-    @PostMapping("/uploadSubjects")
-    public String addSubjects(
-            @RequestParam String subCode,
-            @RequestParam String subject,
-            @RequestParam String semester,
-            @RequestParam String department,
-            @RequestParam String timing,
-            @RequestParam String examDate,
-            @RequestParam String reg_supp,
-            Model model) {
-        String result = subAdminService.createSubjects(subject, subCode, semester, department, examDate, timing, reg_supp);
-        model.addAttribute("result", result);
-        return "uploadSubjects.html";
-    }*/
 
     @PostMapping("/generateHallTicket")
-    public ResponseEntity<byte[]> generateHallTicket(@RequestParam String semester, @RequestParam String department) throws IOException, WriterException {
+    public ResponseEntity<byte[]> generateHallTicket(@RequestParam String semester, @RequestParam String department) throws Exception {
         List<Student> students = subAdminService.fetchStudents(semester, department);
         String htmlContent = subAdminService.generateHtmlFromStudents(students);
         byte[] pdfBytes = subAdminService.convertHtmlToPdf(htmlContent);

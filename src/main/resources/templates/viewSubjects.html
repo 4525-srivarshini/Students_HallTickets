@@ -95,8 +95,18 @@
 </div>
 
 <div class="container">
-    <h1 class="my-4">View Subjects</h1>
-    <button class="btn btn-primary" data-toggle="modal" data-target="#uploadSubjectModal">Upload a new subject</button>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2>Subjects</h2>
+            </div>
+            <div class="col-lg-6 text-right">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#uploadSubjectModal">Create Subject</button>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#createSubjectModal">Upload Subjects</button>
+            </div>
+        </div>
+    </div>
 
     <table class="table table-bordered">
         <thead class="thead-dark">
@@ -172,6 +182,28 @@
                     <button type="submit" class="btn btn-primary">Save changes</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createSubjectModal" tabindex="-1" role="dialog" aria-labelledby="createSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createSubjectModalLabel">Upload Subjects</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadSubjectsForm" method="post" enctype="multipart/form-data" action="/uploadSubjectsData">
+                    <div class="form-group">
+                        <label for="file">Choose file</label>
+                        <input type="file" class="form-control-file" id="file" name="file" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

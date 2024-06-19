@@ -68,8 +68,6 @@
 </div>
 <div class="container mt-4">
     <h2>Students List</h2>
-
-    <!-- Form for selecting semester and department -->
     <form id="viewStudentsForm" th:action="@{/viewStudents}" method="get">
         <div class="form-row">
             <div class="form-group col-md-4">
@@ -105,12 +103,8 @@
             <th>Name</th>
             <th>Department</th>
             <th>Semester</th>
-            <th>Subjects
-                <div class="form-group">
-                    <button type="button" class="btn btn-secondary" onclick="selectAllSubjects()">">>"</button>
-                </div>
-            </th>
-            <th>Actions</th>
+            <th>Edit</th>
+            <th>Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -120,12 +114,9 @@
             <td th:text="${student.department}"></td>
             <td th:text="${student.semester}"></td>
             <td>
-                <select th:id="'subjects-' + ${student.registrationNo}" th:name="'subjects-' + ${student.registrationNo}" class="form-control" multiple>
-                    <option th:each="subject : ${subjects}" th:value="${subject.subjectCode}" th:text="${subject.subjectName}"></option>
-                </select>
+                <a th:href="@{'/editStudent/' + ${student.registrationNo}}" class="btn btn-sm btn-primary">Edit</a>
             </td>
             <td>
-                <a th:href="@{'/editStudent/' + ${student.registrationNo}}" class="btn btn-sm btn-primary">Edit</a>
                 <a th:href="@{'/deleteStudent/' + ${student.registrationNo}}" class="btn btn-sm btn-danger">Delete</a>
             </td>
         </tr>

@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  app:
+    image: my-spring-boot-app:latest-0.0.1   # Ensure this is correctly configured
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/STUDENTS_HALLTICKETS
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: varshi@29
+      MYSQL_DATABASE: STUDENTS_HALLTICKETS
+      MYSQL_USER: root
+      MYSQL_PASSWORD: varshi@29
+    ports:
+      - "3307:3306"
