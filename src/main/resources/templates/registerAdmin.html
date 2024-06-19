@@ -46,27 +46,27 @@
             <form action="#" th:action="@{/registerAdmin}" th:object="${adminCreate}" method="post">
                 <div class="form-group">
                     <label for="sName">Full Name:</label>
-                    <input type="text" class="form-control" id="sName" name="sName" th:field="*{sName}" required>
+                    <input type="text" class="form-control" id="sName" name="sName" th:field="*{sName}" placeholder="Enter your full name" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" name="email" th:field="*{email}" required>
+                    <input type="email" class="form-control" id="email" name="email" th:field="*{email}" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" class="form-control" id="password" name="password" th:field="*{password}" required>
+                    <input type="password" class="form-control" id="password" name="password" th:field="*{password}" placeholder="Enter your password" required>
                 </div>
                 <div class="form-group">
                     <label for="confPassword">Confirm Password:</label>
-                    <input type="password" class="form-control" id="confPassword" name="confPassword" th:field="*{confPassword}" required>
+                    <input type="password" class="form-control" id="confPassword" name="confPassword" th:field="*{confPassword}" placeholder="Re-enter your password" required>
                 </div>
                 <div class="form-group">
                     <label for="employeeId">Employee ID:</label>
-                    <input type="text" class="form-control" id="employeeId" name="employeeId" th:field="*{employeeId}" required>
+                    <input type="text" class="form-control" id="employeeId" name="employeeId" th:field="*{employeeId}" placeholder="Enter your employee ID" required>
                 </div>
                 <div class="form-group">
                     <label for="department">Department:</label>
-                    <input type="text" class="form-control" id="department" name="department" th:field="*{department}" required>
+                    <input type="text" class="form-control" id="department" name="department" th:field="*{department}" placeholder="Enter your department (Ex - CSE_BTECH" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Register</button>
             </form>

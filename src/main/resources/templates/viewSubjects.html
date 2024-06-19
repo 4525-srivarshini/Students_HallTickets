@@ -30,11 +30,13 @@
             /*padding-bottom: 10px; !* Adjusts the space between h1 and the links *!*/
         }
 
-        .nav-links {
-            text-align: center;
-            display: block;  /* Ensures that the links container is a block element */
+        .navbar h1 a {
+            color: white;
+            text-decoration: none;
         }
-
+        .nav-links {
+            display: flex;
+        }
         .nav-links a {
             color: white;
             text-decoration: none;
@@ -84,7 +86,7 @@
 </head>
 <body>
 <div class="navbar">
-    <h1>JNTUK HallTickets</h1>
+    <h1><a href="/homePage">JNTUK HallTickets</a></h1>
     <div class="nav-links">
         <a href="/viewSubAdmins">SubAdmins</a>
         <a href="/viewDepartments">Students</a>
