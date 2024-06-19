@@ -6,8 +6,52 @@
     <title>View Students</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0
+        }
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+            display: block;  /* Ensures that the heading is a block element */
+            /*padding-bottom: 10px; !* Adjusts the space between h1 and the links *!*/
+        }
+
+        .nav-links {
+            text-align: center;
+            display: block;  /* Ensures that the links container is a block element */
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+    </style>
+
+
 </head>
 <body>
+<div class="navbar">
+    <h1>JNTUK HallTickets</h1>
+    <div class="nav-links">
+        <a href="/viewSubAdmins">SubAdmins</a>
+        <a href="/viewDepartments">Students</a>
+        <a href="/viewSubjects">Subjects</a>
+    </div>
+</div>
 <div class="container mt-4">
     <h2>Students List</h2>
 

@@ -5,39 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <style>
-        /* Add your custom CSS styles here */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
+            overflow: hidden; /* Prevent page from scrolling */
+            height: 100vh; /* Ensure body takes full viewport height */
         }
         .navbar {
             background-color: #333;
             color: white;
             padding: 15px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between; /* Adjust alignment */
+            align-items: center;
+            position: relative;
+            z-index: 2;
         }
-        .navbar a {
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+            display: block;  /* Ensures that the heading is a block element */
+            font-weight: 400;
+            /*padding-bottom: 10px;*/
+        }
+        .nav-links {
+            display: flex;
+        }
+        .nav-links a {
             color: white;
             text-decoration: none;
             margin: 0 15px;
+            font-size: 18px;
         }
         .content {
-            margin: 20px;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 60px); /* Full viewport height minus navbar height */
+        }
+        .background-logo {
+            position: absolute;
+            top: 5%;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            background: url('../Jntuk-logo.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.15; /* Increased visibility */
+            z-index: 0;
         }
     </style>
 </head>
 <body>
 <div class="navbar">
-    <h1>JNTUK HallTickets</h1>
-    <a href="/viewSubAdmins">SubAdmins</a>
-    <a href="/viewDepartments">Students</a>
-    <a href="/viewSubjects">Subjects</a>
-</div>
-<div>
-    <div class="header">
-        <img src="../Jntuk-logo.png" alt="JNTUK Logo" class="logo">
+    <h1> JNTUK HallTickets</h1>
+    <div class="nav-links">
+        <a href="/viewSubAdmins">SubAdmins</a>
+        <a href="/viewDepartments">Students</a>
+        <a href="/viewSubjects">Subjects</a>
     </div>
+</div>
+<div class="content">
+    <div class="background-logo"></div>
+
 </div>
 </body>
 </html>

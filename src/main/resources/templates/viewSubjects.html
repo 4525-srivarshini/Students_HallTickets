@@ -11,10 +11,43 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+            display: block;  /* Ensures that the heading is a block element */
+            /*padding-bottom: 10px; !* Adjusts the space between h1 and the links *!*/
+        }
+
+        .nav-links {
+            text-align: center;
+            display: block;  /* Ensures that the links container is a block element */
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+
+        .container {
             padding: 20px;
         }
 
-        h1 {
+        h1.my-4 {
             color: #343a40;
             margin-bottom: 20px;
             text-align: center;
@@ -42,32 +75,23 @@
             background-color: #f2f2f2;
         }
 
-        .table-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .action-links a {
-            margin-right: 10px;
-            text-decoration: none;
-        }
-
-        .action-links a.edit {
-            color: #28a745;
-        }
-
-        .action-links a.delete {
-            color: #dc3545;
-        }
         .modal-content {
             width: 80%;
             max-width: 500px;
             margin: 0 auto;
         }
     </style>
-
 </head>
 <body>
+<div class="navbar">
+    <h1>JNTUK HallTickets</h1>
+    <div class="nav-links">
+        <a href="/viewSubAdmins">SubAdmins</a>
+        <a href="/viewDepartments">Students</a>
+        <a href="/viewSubjects">Subjects</a>
+    </div>
+</div>
+
 <div class="container">
     <h1 class="my-4">View Subjects</h1>
     <button class="btn btn-primary" data-toggle="modal" data-target="#uploadSubjectModal">Upload a new subject</button>
@@ -196,6 +220,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     function editSubject(button) {
