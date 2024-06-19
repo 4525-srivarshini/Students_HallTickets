@@ -16,7 +16,7 @@
         .navbar {
             background-color: #333;
             color: white;
-            padding: 15px;
+            padding: 30px 15px; /* Increased padding to increase navbar height */
             display: flex;
             justify-content: space-between; /* Adjust alignment */
             align-items: center;
@@ -28,7 +28,6 @@
             font-size: 24px;
             display: block;  /* Ensures that the heading is a block element */
             font-weight: 400;
-            /*padding-bottom: 10px;*/
         }
         .navbar h1 a {
             color: white;
@@ -50,7 +49,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: calc(100vh - 60px); /* Full viewport height minus navbar height */
+            height: calc(100vh - 90px); /* Full viewport height minus navbar height */
         }
         .background-logo {
             position: absolute;
@@ -60,16 +59,40 @@
             height: 80%;
             background: url('https://upload.wikimedia.org/wikipedia/en/0/04/Jntuk-logo.png') no-repeat center center;
             background-size: contain;
-            opacity: 0.15; /* Increased visibility */
+            opacity: 0.40; /* Increased visibility */
             z-index: 0;
         }
-
+        .container {
+            z-index: 1;
+            width: 80%;
+            background: rgba(255, 255, 255, 0.8); /* White background with transparency */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .row {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.8); /* White background with transparency */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .row:hover {
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly less transparent on hover */
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .description {
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-<div class="header">
-    <img src="https://www.jntuk.edu.in/static/media/Jntuk-white-logo.3c3e0526.png" alt="JNTUK Logo" class="logo">
-</div>
 <div class="navbar">
     <h1><a href="/homePage">JNTUK HallTickets</a></h1>
     <div class="nav-links">
@@ -80,6 +103,20 @@
 </div>
 <div class="content">
     <div class="background-logo"></div>
+    <div class="container">
+        <div class="row" onclick="window.location.href='/viewSubAdmins'">
+            <div class="title">SubAdmins</div>
+            <div class="description">Manage and view all the sub-administrators who have access to the system.</div>
+        </div>
+        <div class="row" onclick="window.location.href='/viewDepartments'">
+            <div class="title">Students</div>
+            <div class="description">View and manage student information, including registration details and academic records.</div>
+        </div>
+        <div class="row" onclick="window.location.href='/viewSubjects'">
+            <div class="title">Subjects</div>
+            <div class="description">Manage and view details of subjects offered, including course material and schedules.</div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
