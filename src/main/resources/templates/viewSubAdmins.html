@@ -11,26 +11,22 @@
             margin: 0
         }
         .navbar {
-               background-color: #333;
-               color: white;
-            padding: 30px 15px; /* Increased padding to increase navbar height */
-               text-align: center;
-               position: relative;
-               z-index: 2;
-           }
-
+            background-color: #333;
+            color: white;
+            padding: 30px 15px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
         .navbar h1 {
             margin: 0;
             font-size: 24px;
-            display: block;  /* Ensures that the heading is a block element */
-            /*padding-bottom: 10px; !* Adjusts the space between h1 and the links *!*/
+            display: block;
         }
-
         .nav-links {
             text-align: center;
-            display: block;  /* Ensures that the links container is a block element */
+            display: block;
         }
-
         .nav-links a {
             color: white;
             text-decoration: none;
@@ -41,58 +37,39 @@
             color: white;
             text-decoration: none;
         }
-        .nav-links {
-            display: flex;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-size: 18px;
-        }
-
         h1 {
-            /*color: #343a40;*/
             margin-bottom: 20px;
             text-align: center;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         th, td {
             padding: 15px;
             text-align: left;
             border: 1px solid #ddd;
         }
-
         th {
             background-color: #343a40;
             color: white;
         }
-
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
         .table-container {
             display: flex;
             justify-content: center;
         }
-
         .action-links a {
             margin-right: 10px;
             text-decoration: none;
         }
-
         .action-links a.edit {
             color: #28a745;
         }
-
         .action-links a.delete {
             color: #dc3545;
         }
@@ -114,7 +91,6 @@
 </div>
 
 <div class="container mt-4">
-
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
@@ -126,7 +102,6 @@
         </div>
     </div>
 
-
     <table class="table table-striped">
         <thead>
         <tr>
@@ -134,7 +109,8 @@
             <th>Email</th>
             <th>Employee ID</th>
             <th>Department</th>
-            <th>Actions</th>
+            <th>Edit</th>
+            <th>Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -146,6 +122,8 @@
             <td th:text="${subAdmin.department}"></td>
             <td>
                 <a href="#" th:attr="data-toggle='modal', data-target='#editModal', data-name=${subAdmin.sName}, data-email=${subAdmin.email}, data-empid=${subAdmin.employeeId}, data-dept=${subAdmin.department}" class="btn btn-primary btn-sm">Edit</a>
+            </td>
+            <td>
                 <form th:action="@{/deleteSubAdmin}" method="post" style="display: inline;">
                     <input type="hidden" name="email" th:value="${subAdmin.email}">
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -202,7 +180,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" method="post">
+                    <form th:action="@{/editSubAdmin}" id="editForm" method="post">
                         <div class="form-group">
                             <label for="edit_sName">Name:</label>
                             <input type="text" class="form-control" id="edit_sName" name="sName" required>
@@ -232,7 +210,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- JavaScript to populate edit modal fields -->
 <script th:inline="javascript">
     $(document).ready(function() {
         $('#editModal').on('show.bs.modal', function (event) {
@@ -243,7 +220,7 @@
             var dept = button.data('dept');
             var modal = $(this);
 
-            modal.find('#edit_sname').val(name);
+            modal.find('#edit_sName').val(name);
             modal.find('#edit_email').val(email);
             modal.find('#edit_employee_Id').val(empid);
             modal.find('#edit_department').val(dept);

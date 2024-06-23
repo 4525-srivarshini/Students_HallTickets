@@ -204,6 +204,21 @@ public class AdminServiceImpl implements AdminServiceDao{
                         rs.getString("timing")
                 ));
     }
+    public List<Exam> getSubjectsOnSelection(String semester, String department) {
+        return jdbcTemplate.query(
+                "SELECT id, subjectName, subjectCode, semester, department, examDate, timing FROM DS_SEMESTER_DEPARTMENTS WHERE semester = ? AND department = ?",
+                new Object[]{semester, department},
+                (rs, rowNum) -> new Exam(
+                        rs.getLong("id"),
+                        rs.getString("subjectName"),
+                        rs.getString("subjectCode"),
+                        rs.getString("semester"),
+                        rs.getString("department"),
+                        rs.getString("examDate"),
+                        rs.getString("timing")
+                )
+        );
+    }
 
     public String updateSubject(Long id, String subject, String subCode, String semester, String department, String examDate, String timing) {
         try {

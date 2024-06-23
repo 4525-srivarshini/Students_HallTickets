@@ -5,17 +5,29 @@ import com.charms.beans.Exam;
 import com.charms.beans.Student;
 import com.charms.beans.Subject;
 import com.charms.services.AdminServiceImpl;
+import com.charms.services.SubAdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 public class AdminHomeController {
     @Autowired
     AdminServiceImpl adminService;
+
+    @Autowired
+    SubAdminServiceImpl subAdminService;
 
     @GetMapping("/registerAdmin")
     public String showRegisterAdminForm(Model model) {
@@ -26,11 +38,7 @@ public class AdminHomeController {
     @PostMapping("/registerAdmin")
     public String register(@ModelAttribute("adminCreate") AdminCreate account) {
         boolean registrationSuccess = adminService.createAdmin(account);
-        if (registrationSuccess) {
-            return "redirect:/homePage";
-        } else {
-            return "redirect:/registerAdmin";
-        }
+        return registrationSuccess ? "redirect:/homePage" : "redirect:/registerAdmin";
     }
 
     @GetMapping("/loginAdmin")
@@ -41,11 +49,7 @@ public class AdminHomeController {
     @PostMapping("/loginAdmin")
     public String login(@RequestParam String username, @RequestParam String password) {
         boolean loginSuccess = adminService.loginAdmin(username, password);
-        if (loginSuccess) {
-            return "redirect:/homePage";
-        } else {
-            return "redirect:/loginAdmin";
-        }
+        return loginSuccess ? "redirect:/homePage" : "redirect:/loginAdmin";
     }
 
     @GetMapping("/homePage")
@@ -54,15 +58,25 @@ public class AdminHomeController {
     }
 
     @PostMapping("/createSubAdmin")
-    public String createSubAdmin(@RequestParam String sname, @RequestParam String email, @RequestParam String employee_Id, @RequestParam String department) {
-        boolean isCreateSubAdmin = adminService.createSubAdmin(sname, email, employee_Id, department);
+    public String createSubAdmin(@RequestParam String sName, @RequestParam String email, @RequestParam String employee_Id, @RequestParam String department) {
+        boolean isCreateSubAdmin = adminService.createSubAdmin(sName, email, employee_Id, department);
         return "redirect:/viewSubAdmins";
     }
 
     @PostMapping("/editSubAdmin")
-    public String editSubAdmin(@RequestParam String sname, @RequestParam String email, @RequestParam String employee_Id, @RequestParam String department) {
-        boolean isEditSubAdmin = adminService.editSubAdmin(sname, email, employee_Id, department);
+    public String editSubAdmin(@RequestParam String sName, @RequestParam String email, @RequestParam String employee_Id, @RequestParam String department) {
+        boolean isEditSubAdmin = adminService.editSubAdmin(sName, email, employee_Id, department);
         return "redirect:/viewSubAdmins";
+    }
+
+    @GetMapping("/uploadStudentsPage")
+    public String uploadStudentsPage() {
+        return "uploadStudentsPage";
+    }
+
+    @GetMapping("/generateHallTicketPage")
+    public String generateHallTicketPage() {
+        return "generateHallTicketPage";
     }
 
     @PostMapping("/deleteSubAdmin")
@@ -80,8 +94,7 @@ public class AdminHomeController {
 
     @GetMapping("/getSubAdmins/{employeeId}")
     public List<AdminCreate> getSubAdmin(Model model, @PathVariable String employeeId) {
-        List<AdminCreate> subAdminDetails = adminService.getSubAdminDetails(employeeId);
-        return subAdminDetails;
+        return adminService.getSubAdminDetails(employeeId);
     }
 
     @GetMapping("/viewDepartments")
@@ -94,9 +107,7 @@ public class AdminHomeController {
     @GetMapping("/viewStudents")
     public String viewStudents(Model model, @RequestParam String semester, @RequestParam String department) {
         List<Student> students = adminService.getStudentsByDepartmentAndSemester(department, semester);
-        List<Subject> subjects = adminService.getAllSubjects();
         model.addAttribute("students", students);
-        model.addAttribute("subjects", subjects);
         return "viewDepartments";
     }
 
@@ -119,6 +130,13 @@ public class AdminHomeController {
         return "viewSubjects";
     }
 
+    @GetMapping("/viewSubjectsOnSelection")
+    public String viewSubjectsOnSelection(Model model, @RequestParam String semester, @RequestParam String department) {
+        List<Exam> subjects = adminService.getSubjectsOnSelection(semester, department);
+        model.addAttribute("subjects", subjects);
+        return "viewSubjects";
+    }
+
     @PostMapping("/editSubjects")
     public String editSubjects(@RequestParam Long id, @RequestParam String subCode, @RequestParam String subject, @RequestParam String semester, @RequestParam String department, @RequestParam String timing, @RequestParam String examDate, Model model) {
         String result = adminService.updateSubject(id, subject, subCode, semester, department, examDate, timing);
@@ -131,5 +149,42 @@ public class AdminHomeController {
         String result = adminService.deleteSubject(id);
         model.addAttribute("result", result);
         return "redirect:/viewSubjects";
+    }
+
+    @PostMapping("/signOut")
+    public String signOut(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/loginAdmin";
+    }
+
+    @PostMapping("/uploadStudentsData")
+    public String uploadStudentsData(@RequestParam("file") MultipartFile file) throws IOException {
+        boolean success = subAdminService.uploadStudentsData(file);
+        return success ? "viewDepartments" : "errorMessage";
+    }
+
+    @PostMapping("/generateHallTicket")
+    public ResponseEntity<byte[]> generateHallTicket(@RequestParam String semester, @RequestParam String department) throws Exception {
+        List<Student> students = subAdminService.fetchStudents(semester, department);
+        String htmlContent = subAdminService.generateHtmlFromStudents(students);
+        byte[] pdfBytes = subAdminService.convertHtmlToPdf(htmlContent);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "hall_ticket.pdf");
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/uploadSubjectsData")
+    public String uploadSubjectsData(@RequestParam("file") MultipartFile file) throws IOException {
+        boolean log = subAdminService.uploadSubjectsData(file);
+        if (true){
+            return "successMessage";
+        }
+        else {
+            return "successMessage.html";
+        }
     }
 }

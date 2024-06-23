@@ -44,7 +44,6 @@ public class SubAdminServiceImpl implements SubAdminServiceDao {
 
     @Override
     public Boolean uploadStudentsData(MultipartFile file) throws IOException {
-        boolean log = false;
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
         Sheet sheet = workbook.getSheetAt(0);
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -66,7 +65,6 @@ public class SubAdminServiceImpl implements SubAdminServiceDao {
         return true;
     }
     public Boolean uploadSubjectsData(MultipartFile file) throws IOException {
-        boolean logn= false;
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
         Sheet sheet = workbook.getSheetAt(0);
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {

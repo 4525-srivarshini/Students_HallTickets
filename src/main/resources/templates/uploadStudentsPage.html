@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Students</title>
+    <title>Upload Students</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,7 +77,6 @@
     </style>
 </head>
 <body>
-
 <div class="navbar">
     <h1><a href="/homePage">JNTUK HallTickets</a></h1>
     <div class="nav-links">
@@ -85,59 +85,25 @@
         <a href="/viewSubjects">Subjects</a>
     </div>
 </div>
-
 <div class="main-content">
     <div class="newNavbar">
         <div class="nav-links">
             <a href="/uploadStudentsPage">Upload Students</a>
-            <a href="/generateHallTicketPage" onclick="generateHallTicket()">Generate Hall Tickets</a>
+            <a href="/generateHallTicketPage">Generate Hall Tickets</a>
         </div>
     </div>
-
-
     <div class="container mt-4">
-    <h2>Students List</h2>
-    <form id="viewStudentsForm" th:action="@{/viewStudents}" method="get">
-        <div class="form-row align-items-end">
-            <div class="form-group col-md-4">
-                <label for="semester">Select Semester:</label>
-                <select id="semester" name="semester" class="form-control">
-                    <option th:each="student : ${students}" th:value="${student.semester}"
-                            th:text="${student.semester}"></option>
-                </select>
+        <h2>Upload Students</h2>
+        <form th:action="@{/uploadStudentsData}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="studentsFile">Select Students File:</label>
+                <input type="file" id="studentsFile" name="file" class="form-control">
             </div>
-            <div class="form-group col-md-4">
-                <label for="department">Select Department:</label>
-                <select id="department" name="department" class="form-control">
-                    <option th:each="student : ${students}" th:value="${student.department}"
-                            th:text="${student.department}"></option>
-                </select>
-            </div>
-            <div class="form-group col-md-4">
-                <button type="submit" class="btn btn-primary btn-block">View Students</button>
-            </div>
-        </div>
-    </form>
-
-    <table class="table table-bordered table-hover mt-4">
-        <thead class="thead-dark">
-        <tr>
-            <th>Registration No</th>
-            <th>Name</th>
-            <th>Department</th>
-            <th>Semester</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="student : ${students}">
-            <td th:text="${student.registrationNo}"></td>
-            <td th:text="${student.name}"></td>
-            <td th:text="${student.department}"></td>
-            <td th:text="${student.semester}"></td>
-        </tr>
-        </tbody>
-    </table>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+    </div>
 </div>
+
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -149,15 +115,5 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-4oK5Ff+rBdHRBiVcF2jcO+kgpKk7t3g20gG3OStXAZmZGGC1Pi6OgPEJgeDEKaVb"
         crossorigin="anonymous"></script>
-
-<script>
-    function generateHallTicket() {
-        var semester = document.getElementById("semester").value;
-        var department = document.getElementById("department").value;
-        // Form the URL with parameters and redirect to generate hall ticket endpoint
-        window.location.href = "/generateHallTicket?semester=" + encodeURIComponent(semester) + "&department=" + encodeURIComponent(department);
-    }
-</script>
-
 </body>
 </html>
