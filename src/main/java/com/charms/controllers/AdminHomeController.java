@@ -182,7 +182,7 @@ public class AdminHomeController {
     @PostMapping("/uploadStudentsData")
     public String uploadStudentsData(@RequestParam("file") MultipartFile file) throws IOException {
         boolean success = subAdminService.uploadStudentsData(file);
-        return success ? "viewDepartments" : "errorMessage";
+        return success ? "successStudents" : "successStudents";
     }
 
     @PostMapping("/generateHallTicket")
