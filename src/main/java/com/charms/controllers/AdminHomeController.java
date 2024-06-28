@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class AdminHomeController {
@@ -98,11 +100,28 @@ public class AdminHomeController {
     }
 
     @GetMapping("/viewDepartments")
-    public String viewDepartments(Model model) {
+    public String viewDepartments(@RequestParam(required = false) String semester,
+                                  @RequestParam(required = false) String department,
+                                  Model model) {
         List<Student> students = adminService.getAllSemesters();
+
+        Set<String> uniqueSemesters = students.stream()
+                .map(Student::getSemester)
+                .collect(Collectors.toSet());
+
+        Set<String> uniqueDepartments = students.stream()
+                .map(Student::getDepartment)
+                .collect(Collectors.toSet());
+
+        model.addAttribute("uniqueSemesters", uniqueSemesters);
+        model.addAttribute("uniqueDepartments", uniqueDepartments);
         model.addAttribute("students", students);
+        model.addAttribute("semester", uniqueSemesters);
+        model.addAttribute("department", uniqueDepartments);
+
         return "viewDepartments";
     }
+
 
     @GetMapping("/viewStudents")
     public String viewStudents(Model model, @RequestParam String semester, @RequestParam String department) {

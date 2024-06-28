@@ -83,6 +83,9 @@
         <a href="/viewSubAdmins">SubAdmins</a>
         <a href="/viewDepartments">Students</a>
         <a href="/viewSubjects">Subjects</a>
+        <form th:action="@{/signOut}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Sign Out</button>
+        </form>
     </div>
 </div>
 <div class="main-content">
